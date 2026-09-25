@@ -11,6 +11,7 @@
   .p5Canvas { display: none !important; }
   .bar { display: flex; gap: 10px; align-items: center; max-width: 1280px; }
   #scrub { flex: 1; }
+  @font-face { font-family: 'Frank Ruhl Libre'; src: url(assets/fonts/frankruhl-heb.woff2) format('woff2'); font-weight: 300 900; unicode-range: U+0590-05FF, U+FB1D-FB4F; }
   #tt { font-variant-numeric: tabular-nums; min-width: 190px; }
 </style>
 <script src="node_modules/p5/lib/p5.min.js"></script>
@@ -29,7 +30,16 @@
 <!-- reference sheets (standalone loops) -->
 <script src="src/sheets.js"></script>
 <!-- your video: add a script per scene file, in order -->
-<script src="src/scenes/demo.js"></script>
+<script>window.FONTS = ['800 80px "Frank Ruhl Libre"'];</script>
+<script src="src/scenes/mt_common.js"></script>
+<script src="src/scenes/mt_intro.js"></script>
+<script src="src/scenes/mt_s1.js"></script>
+<script src="src/scenes/mt_s2.js"></script>
+<script src="src/scenes/mt_s3.js"></script>
+<script src="src/scenes/mt_bridge.js"></script>
+<script src="src/scenes/mt_s4.js"></script>
+<script src="src/scenes/mt_s5.js"></script>
+<script src="src/scenes/mt_s6.js"></script>
 <script>
   // Open studio.html?loop=emotions (or views) to scrub a standalone loop instead of the video.
   const q = new URLSearchParams(location.search).get('loop'); if (q && LOOPS[q]) window.LOOP = LOOPS[q];

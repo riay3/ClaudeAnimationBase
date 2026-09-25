@@ -1,2 +1,4 @@
 node_modules
 out/
+assets/*.mp3
+chk.sh

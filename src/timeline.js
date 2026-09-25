@@ -20,6 +20,7 @@ function drawWorld(t) {
     SHOTS[i][1](t, t - t0, end - t0);
     CAM = null;
   }
+  if (window.TOP_LAYER && !window.LOOP) window.TOP_LAYER(t);   // screen-space layer over every shot (lyrics)
   flushLetters();
 }
 

@@ -406,6 +406,10 @@ function hat(u, h, sw) {
   } else if (h === 'headphones') {
     inkLine(P([[-5.1, -5.8], [-4.6, -9.4], [0, -10.6], [4.6, -9.4], [5.1, -5.8]]), sw * 2.4, PAL.ink, 'ink', .6);
     for (const s of [-1, 1]) paint(rrPts((s < 0 ? -6.1 : 4.6) * u, -7.4 * u, 1.5 * u, 2.8 * u, .6 * u), { wash: PAL.violet, fill: PAL.rose, fillOp: 50, ink: PAL.ink, sw: sw * .7 });
+  } else if (h === 'kippah') {   // a small embroidered skullcap on the crown
+    const d = []; for (let i = 0; i <= 12; i++) { const a = Math.PI + i / 12 * Math.PI; d.push([Math.cos(a) * 2.3 * u, -7.95 * u + Math.sin(a) * 1.05 * u]); }
+    paint(d, { wash: '#34407E', ink: PAL.ink, sw: sw * .7 });
+    inkLine(P([[-2, -8.35], [0, -8.5], [2, -8.35]]), sw * .5, '#E8C872', 'inkfine', .5);
   } else if (h === 'cat') {
     for (const s of [-1, 1]) {
       paint([[s * 4.9 * u, -7.9 * u], [s * 4.3 * u, -11 * u], [s * 1.9 * u, -7.9 * u]], { wash: PAL.clay, ink: PAL.ink, sw: sw * .8 });
