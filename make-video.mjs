@@ -11,7 +11,7 @@
 // Double-click "Make Video (Mac).command" or "Make Video (Windows).bat" to run it without typing anything.
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, copyFileSync, mkdirSync, readFileSync, writeFileSync, rmSync, statSync } from 'node:fs';
-import { join, resolve, basename } from 'node:path';
+import { join, resolve, basename, dirname } from 'node:path';
 import { homedir, cpus, platform } from 'node:os';
 import { createHash } from 'node:crypto';
 import { createInterface } from 'node:readline/promises';
@@ -25,7 +25,16 @@ const say = (...m) => console.log(...m), step = (n, m) => say(`\n\x1b[1m[${n}/6]
 const fail = m => { say(`\n\x1b[31m✗ ${m}\x1b[0m`); process.exit(1); };
 const rl = createInterface({ input: process.stdin, output: process.stdout });
 const ask = async (q, def = 'y') => args.yes ? def : ((await rl.question(q)).trim() || def);
-const run = (cmd, a, o = {}) => new Promise((ok, bad) => { const p = spawn(cmd, a, { stdio: 'inherit', shell: WIN, ...o }); p.on('close', c => c ? bad(new Error(`${cmd} exited with code ${c}`)) : ok()); });
+// Windows runs npm/npx (.cmd files) only through the shell, which splits on spaces: quote anything with a space in it.
+// Everything else (node itself, at a path like C:\Program Files\nodejs\node.exe) runs directly, with no shell.
+const q = x => /[\s&()^]/.test(x) ? `"${x}"` : x;
+const viaShell = cmd => WIN && /\.cmd$/i.test(cmd);
+const shellArgs = (cmd, a) => viaShell(cmd) ? [q(cmd), a.map(q), { shell: true }] : [cmd, a, {}];
+const run = (cmd, a, o = {}) => new Promise((ok, bad) => { const [c, aa, so] = shellArgs(cmd, a); const p = spawn(c, aa, { stdio: 'inherit', ...so, ...o }); p.on('error', bad); p.on('close', code => code ? bad(new Error(`${basename(cmd)} exited with code ${code}`)) : ok()); });
+// npm and npx sit next to the node that's running this, so use those rather than relying on the PATH
+const nodeTool = name => { const p = join(dirname(process.execPath), WIN ? name + '.cmd' : name); return existsSync(p) ? p : WIN ? name + '.cmd' : name; };
+// the running node's folder goes first on the PATH, so npm's own install scripts find node too
+process.env.PATH = dirname(process.execPath) + (WIN ? ';' : ':') + process.env.PATH;
 
 say('\x1b[1mMaoz Tzur: making the video\x1b[0m  (you can close this window at any time; run it again to continue)');
 
@@ -36,7 +45,7 @@ if (major < 18) fail(`This needs Node.js 18 or newer (you have ${process.version
 say(`  Node.js ${process.versions.node} ✓`);
 if (!existsSync('node_modules/puppeteer-core') || !existsSync('node_modules/p5.brush') || !existsSync('node_modules/ffmpeg-static')) {
   say('  Installing the parts it needs (one time, a minute or two)…');
-  await run(WIN ? 'npm.cmd' : 'npm', ['install', '--no-audit', '--no-fund']).catch(e => fail(`Installing failed (${e.message}). Check your internet connection and run this again.`));
+  await run(nodeTool('npm'), ['install', '--no-audit', '--no-fund']).catch(e => fail(`Installing failed (${e.message}). Check your internet connection and run this again.`));
 }
 say('  Parts installed ✓');
 
@@ -70,7 +79,8 @@ let chrome = chromes.find(p => p && existsSync(p));
 if (!chrome) {
   const dir = resolve('.chrome');
   say('  Chrome isn\'t installed, so downloading a private copy for this (one time, ~150 MB)…');
-  const r = spawnSync(WIN ? 'npx.cmd' : 'npx', ['--yes', '@puppeteer/browsers', 'install', 'chrome@stable', '--path', dir], { encoding: 'utf8', shell: WIN });
+  const [c, aa, so] = shellArgs(nodeTool('npx'), ['--yes', '@puppeteer/browsers', 'install', 'chrome@stable', '--path', dir]);
+  const r = spawnSync(c, aa, { encoding: 'utf8', ...so });
   chrome = (r.stdout || '').trim().split('\n').pop()?.split(' ').slice(1).join(' ');
   if (!chrome || !existsSync(chrome)) fail('Couldn\'t get Chrome. Install Google Chrome from https://www.google.com/chrome and run this again.');
 }

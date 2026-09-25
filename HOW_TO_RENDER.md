@@ -56,7 +56,7 @@ If it says Chrome "can't use a graphics card here", it can still paint in softwa
 
 ## If something goes wrong
 
-- **"Node.js isn't installed yet":** do step 2, then double-click the launcher again.
+- **"Node.js was not found" or "'node' is not recognized":** make sure you finished step 2. If you did, restart the computer (or sign out and back in) so Windows notices the new program, then double-click the launcher again. The current launcher also looks in Node.js's usual install folders by itself, so if you downloaded the project before this fix, download the ZIP again (step 1).
 - **It stops partway:** double-click the launcher again and it continues. If the computer is struggling, it automatically switches to painting fewer frames at a time.
 - **The video has no sound:** the song wasn't found. Put the MP3 in `assets` named `maoz_tzur.mp3` and run the launcher again. The frames are already done, so this step is quick.
 - **You changed the animation's code:** the launcher notices and repaints from the start, so old frames aren't mixed with new ones.
