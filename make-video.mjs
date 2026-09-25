@@ -5,7 +5,7 @@
 //   node make-video.mjs                 the whole video → out/Maoz_Tzur.mp4
 //   node make-video.mjs --test          a 3-second sample first (out/test.mp4), to check everything works
 //   node make-video.mjs --workers=2     fewer frames at once (if the computer struggles), or more (if it's idle)
-//   node make-video.mjs --song=<file>   use this MP3 (otherwise it looks for one and asks if it can't find it)
+//   node make-video.mjs --song=<file>   use this MP3 (otherwise: the MP3 in this folder, next to the launchers)
 //   node make-video.mjs --yes           don't ask questions; take the default answer
 //
 // Double-click "Make Video (Mac).command" or "Make Video (Windows).bat" to run it without typing anything.
@@ -52,21 +52,27 @@ say('  Parts installed ✓');
 // ---------- 2. the song ----------
 step(2, 'Finding the song');
 const clean = p => p.trim().replace(/^['"]|['"]$/g, '').replace(/\\ /g, ' ');
+// The song is the MP3 you put in this folder, next to the launchers. Nothing else on the computer is searched, so a
+// different recording of Maoz Tzur in Downloads can't be picked by mistake.
+const HERE = resolve('.');
 let song = args.song ? clean(String(args.song)) : null;
-if (!song && existsSync(SONG)) song = SONG;
-if (!song) {
-  const dirs = ['.', 'assets', join(homedir(), 'Downloads'), join(homedir(), 'Desktop'), join(homedir(), 'Music')];
-  const found = [];
-  for (const d of dirs) { try { for (const f of readdirSync(d)) if (/\.mp3$/i.test(f) && /maoz|tzur|tsur/i.test(f)) found.push(join(d, f)); } catch {} }
-  if (found.length) { song = found.sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0]; say(`  Found ${song}`); }
+while (!song) {
+  const mp3s = readdirSync('.').filter(f => /\.mp3$/i.test(f));
+  if (mp3s.length === 1) song = mp3s[0];
+  else if (mp3s.length > 1) {
+    if (args.yes) fail(`There are ${mp3s.length} MP3s in ${HERE}. Leave only the one to use, or run with --song=<file>.`);
+    say(`  There are ${mp3s.length} MP3 files in this folder:`); mp3s.forEach((f, i) => say(`    ${i + 1}. ${f}`));
+    const n = +(await rl.question('  Type the number of the one to use and press Enter: ')).trim();
+    if (n >= 1 && n <= mp3s.length) song = mp3s[n - 1];
+  } else {
+    if (args.yes) fail(`No MP3 in ${HERE}. Put the song's MP3 in that folder and run this again.`);
+    await rl.question(`  Put the Maoz Tzur MP3 into this folder (the one with the "Make Video" launchers):\n    ${HERE}\n  then press Enter here. `);
+  }
 }
-while (!song || !existsSync(song)) {
-  if (args.yes) fail(`Couldn't find the song. Put the MP3 at ${SONG} (inside this folder), or run with --song=<path to the mp3>.`);
-  song = clean(await rl.question('  Where is the Maoz Tzur MP3? Drag the file into this window and press Enter: '));
-  if (!existsSync(song)) say('  That file doesn\'t exist; try again.');
-}
+if (!existsSync(song)) fail(`Can't find ${song}.`);
+// the renderer reads the song from assets/maoz_tzur.mp3: always refresh that copy from the one chosen here
 if (resolve(song) !== resolve(SONG)) { mkdirSync('assets', { recursive: true }); copyFileSync(song, SONG); }
-say(`  Song ✓ (${basename(song)})`);
+say(`  Song ✓ ${basename(song)}`);
 
 // ---------- 3. a browser to paint in ----------
 step(3, 'Finding Chrome');

@@ -19,7 +19,7 @@ You also need **Google Chrome**. You probably have it already. If you don't, the
 
 ## 3. The song
 
-Keep the Maoz Tzur MP3 in your **Downloads** folder (or your Desktop or Music folder). The launcher finds it by its name. If it can't find it, it asks you to drag the file into its window. You can also copy it into the project's `assets` folder yourself and name it `maoz_tzur.mp3`.
+Put the Maoz Tzur MP3 **in the project folder, right next to the "Make Video" launchers**. The launcher uses that file and nothing else, whatever it's called. If there's no MP3 there, it waits for you to put one in. If there's more than one, it asks which to use.
 
 ## 4. Double-click the launcher
 
@@ -58,7 +58,7 @@ If it says Chrome "can't use a graphics card here", it can still paint in softwa
 
 - **"Node.js was not found" or "'node' is not recognized":** make sure you finished step 2. If you did, restart the computer (or sign out and back in) so Windows notices the new program, then double-click the launcher again. The current launcher also looks in Node.js's usual install folders by itself, so if you downloaded the project before this fix, download the ZIP again (step 1).
 - **It stops partway:** double-click the launcher again and it continues. If the computer is struggling, it automatically switches to painting fewer frames at a time.
-- **The video has no sound:** the song wasn't found. Put the MP3 in `assets` named `maoz_tzur.mp3` and run the launcher again. The frames are already done, so this step is quick.
+- **The sound is wrong or missing:** check that the right MP3 is in the project folder, next to the launchers (and that it's the only one). Then run the launcher again. Frames already painted are kept, so only the music step is redone.
 - **You changed the animation's code:** the launcher notices and repaints from the start, so old frames aren't mixed with new ones.
 
 For people comfortable with a terminal: `node make-video.mjs --test` makes only the sample, and `--workers=N` sets how many frames are painted at once (the default is 4). Everything underneath is `render.mjs`; see ANIMATION_GUIDE.md.
