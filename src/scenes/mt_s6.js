@@ -13,11 +13,14 @@
     const storm = ease(seg(t, tStorm, tStorm + 1.6)) * (1 - ease(seg(t, tCalm, tCalm + 2.4)));
     const guard = ease(seg(t, tGuard, tGuard + .7)) * (1 - ease(seg(t, tCalm + 1.2, tCalm + 2.2)));
     // camera: out of the flame (gold) → the sill; a slow push while the storm rages; eases back as it calms
-    const pull = easeOut(seg(t, T0, T0 + 2.2)), w0 = wick(0);
-    const shake = shakeXY(t, 3 * storm);
-    camBegin(lerp(w0[0] - 60, 900, pull) + shake[0], lerp(w0[1] - 60, 625, pull) + shake[1], lerp(9, 1.45, pull) + .12 * storm);
-    room(t, 0, { storm, snowN: Math.round(46 + 110 * storm), wind: 3 * storm, lights: ease(seg(t, tCalm + 1.5, tCalm + 3.5)), stars7: [0, 1, 2, 3, 4, 5, 6].map(i => ease(seg(t, tCalm + 2 + i * .25, tCalm + 2.6 + i * .25))) });
-    if (storm > 0) snowfall(t, Math.round(50 * storm), 4 * storm, 1.8, 170 * storm, 9);
+    const pull = ease(seg(t, T0 + .5, T0 + 2.4)), shake = shakeXY(t, 3 * storm);
+    // the camera starts inside the shamash flame in Clawd's hand (the match with the Temple flame) and pulls back
+    const stage = hf => {
+      const f = hf || [900, 625];
+      camBegin(lerp(f[0], 900, pull) + shake[0], lerp(f[1], 625, pull) + shake[1], lerp(9, 1.45, pull) + .12 * storm);
+      room(t, 0, { storm, snowN: Math.round(46 + 110 * storm), wind: 3 * storm, lights: ease(seg(t, tCalm + 1.5, tCalm + 3.5)), stars7: [0, 1, 2, 3, 4, 5, 6].map(i => ease(seg(t, tCalm + 2 + i * .25, tCalm + 2.6 + i * .25))) });
+      if (storm > 0) snowfall(t, Math.round(50 * storm), 4 * storm, 1.8, 170 * storm, 9);
+    };
     // lighting the candles: reach each wick in turn, hopping between them
     const lit = [0, 1, 2, 3, 4, 5, 6, 7].map(i => ease(seg(t, tC(i) - .1, tC(i) + .3)));
     lit.push(t > tPlace ? 1 : 0);
@@ -40,6 +43,8 @@
       else if (t > tC(7) + .5) x = lerp(at(7), at(-1.5), ease(seg(t, tC(7) + .5, tPlace - .3)));
       else { const a = at(kk), b = at(Math.min(7, kk + 1)); x = f < .7 ? a : lerp(a, b, ease((f - .7) / .3)); const hop = jump(t, tC(0) - 1 + (kk + .7) * 2 * BEAT, tC(0) - 1 + (kk + 1) * 2 * BEAT, 1); if (kk < 7) { pose.dy += hop.dy; pose.sq += hop.sq; } }
       if (t > tPlace - .5) { const h = jump(t, tPlace - .45, tPlace + .1, .8); pose.dy += h.dy; pose.sq += h.sq; }
+      const tip = armTipR(x, y, U, pose);
+      stage([tip[0], tip[1] - 2.8 * U * (1 - (pose.sq || 0))]);
       clawd(x, y, U, t < tPlace ? carryCandle(pose, 1) : pose);
     } else {
       // up onto the sill, behind the hanukkiah, facing the room: a windbreak with arms spread
@@ -48,6 +53,7 @@
       const hop = jump(t, tGuard - .25, tGuard + .35, 2.4), hop2 = jump(t, tCalm + 1.2, tCalm + 1.8, 1.5);
       const brace = guard * (1 - .2 * Math.sin(t * 9) * storm);
       pose = { ...mood, view: guard > .5 ? 'front' : 'q', flip: guard <= .5, hat: 'kippah', aL: lerp(mood.aL ?? .2, .15, brace), aR: lerp(mood.aR ?? .2, .15, brace), sx: 1 + .25 * guard, dy: (mood.dy || 0) * (1 - guard) + hop.dy + hop2.dy, sq: (mood.sq || 0) + hop.sq + hop2.sq + .06 * storm * Math.sin(t * 13) * guard };
+      stage(null);
       clawd(x, y, lerp(U, U * 1.15, guard), pose);
       if (guard > .3) { boilSeed('snowdust'); for (let s = 0; s < 6; s++) paint(ellPts(x - 4 * U + s * 1.6 * U, y - 8.1 * U, 10, 5, 8), { wash: MT.snow, washOp: 230 * guard, ink: null }); }
     }
