@@ -1,33 +1,44 @@
-// mt_bridge.js: BRIDGE (194.2–226.5 s, instrumental). On the big hit, the Second Temple is rebuilt course by course,
-// one course per beat. Then a quiet night in Shushan: the palace of columns, Mordechai at the king's gate, and a tall
-// three-cornered shadow rising on the wall. The lots tumble, the seal stamps, the shadow swallows the frame. (Shots P–R.)
+// mt_bridge.js: the instrumental passages between verses.
+//   After stanza 3 (2:46–2:55): a quiet night in Shushan: the palace of columns, Mordechai at the king's gate, and a tall
+//     three-cornered shadow rising on the wall, which swallows the frame.
+//   The guitar solo after stanza 4 (3:44–4:08): Jerusalem's walls rebuilt course by course, one per beat; then a storm,
+//     and the shadow of a Greek hoplite rises over the new walls and swallows the frame.
+// These shots were first written for a different slot in the song, so they're placed with shotsShifted (see mt_common).
+// (The lots shot, shotLots, isn't used in this arrangement.)
 (() => {
   const U = 22, tHit = bt(beatAt(194.2)), tNight = bt(beatAt(204.0)), tLots = bt(beatAt(218.45)), tS4 = lineT(3, 0);
+
+  // the wall, rising: nb = beats since building began; dark 0..1 = the storm that follows
+  function wallScene(t, nb, dark = 0) {
+    skyWash(['#8FB6DE', '#F4D9A6', '#F9E2B2'].map((c, i) => mixCol(c, ['#262A38', '#3A4058', '#555C74'][i], dark)), 'buildsky', -900, W + 900, -700, 800);
+    boilSeed('bsun'); glow(1580, 260, 420, '#FFE2A0', .7 * (1 - dark));
+    ridge(-900, W + 900, 720, 50, 91, mixCol('#B99A7A', '#4A4A56', dark), { ink: null, texCol: '#9A7A5A' });
+    return () => {   // the part in front of anything that rises behind the wall
+      ridge(-900, W + 900, 840, 18, 93, mixCol('#C9A870', '#5A5A60', dark), { texCol: '#A8864E' });
+      // the courses: each lands on its beat, dropping in with a squash
+      const X0 = 520, CW = 110, CH = 56, BASE = 840;
+      for (let r = 0; r < 8; r++) {
+        const narrow = r >= 5 ? 2 : 0;
+        for (let c = narrow; c < 8 - narrow; c++) {
+          const land = r * 2 + (c % 2) * .5 + (c > 3 ? .25 : 0), k = nb - land;
+          if (k < -.45) continue;
+          const drop = k < 0 ? easeIn(clamp((k + .45) / .45)) : 1, y = BASE - (r + 1) * CH - (1 - drop) * 500, sq = k >= 0 ? .15 * Math.exp(-k * 8) : 0;
+          boilSeed('blk' + r + '_' + c);
+          paint(rectPts(X0 + c * CW + (r % 2) * 20 - CW * sq * .3, y + CH * sq, CW - 6 + CW * sq * .6, CH - 4 - CH * sq, 2), { wash: mixCol(mixCol(MT.stone, MT.stoneDk, .2 + .3 * hs(r * 9 + c, 4)), '#6A6A74', dark * .6), fill: MT.stoneDk, fillOp: 40, tex: .6, ink: PAL.ink, sw: .9 });
+          if (k >= 0 && k < .6) { boilSeed('dust' + r + c); paint(ellPts(X0 + c * CW + CW / 2, y + CH, 60 * (1 + k * 2), 16 * (1 + k), 12), { wash: '#E8D6B0', washOp: 180 * (1 - k / .6), ink: null }); }
+        }
+      }
+      const done = ease(seg(nb, 16, 17.5));
+      if (done > 0) { boilSeed('crown'); paint(rectPts(X0 + 2 * CW, BASE - 8 * CH - 20, 4 * CW, 20), { wash: MT.gold, ink: PAL.ink, sw: .8 }); glow(X0 + 4 * CW, BASE - 8 * CH - 60, 300 * done * (1 - dark), '#FFE2A0', .8 * done); }
+    };
+  }
 
   // P: rebuilding, on the beat
   function shotBuild(t, lt, dur) {
     const b0 = beatAt(tHit), nb = bpOf(t) - bpOf(tHit);   // beats since the hit
     const shake = shakeXY(t, 5 * pulse(t, 8) * (t < tNight - 1 ? 1 : 0));
     camBegin(980 + shake[0] + 300 * Math.pow(1 - seg(lt, 0, .35), 2), 560 + shake[1], 1.05 + .05 * seg(lt, 0, dur));
-    skyWash(['#8FB6DE', '#F4D9A6', '#F9E2B2'], 'buildsky', -900, W + 900, -700, 800);
-    boilSeed('bsun'); glow(1580, 260, 420, '#FFE2A0', .7);
-    ridge(-900, W + 900, 720, 50, 91, '#B99A7A', { ink: null, texCol: '#9A7A5A' });
-    ridge(-900, W + 900, 840, 18, 93, '#C9A870', { texCol: '#A8864E' });
-    // the courses: each lands on its beat, dropping in with a squash
-    const X0 = 520, CW = 110, CH = 56, BASE = 840;
-    for (let r = 0; r < 8; r++) {
-      const narrow = r >= 5 ? 2 : 0;
-      for (let c = narrow; c < 8 - narrow; c++) {
-        const land = r * 2 + (c % 2) * .5 + (c > 3 ? .25 : 0), k = nb - land;
-        if (k < -.45) continue;
-        const drop = k < 0 ? easeIn(clamp((k + .45) / .45)) : 1, y = BASE - (r + 1) * CH - (1 - drop) * 500, sq = k >= 0 ? .15 * Math.exp(-k * 8) : 0;
-        boilSeed('blk' + r + '_' + c);
-        paint(rectPts(X0 + c * CW + (r % 2) * 20 - CW * sq * .3, y + CH * sq, CW - 6 + CW * sq * .6, CH - 4 - CH * sq, 2), { wash: mixCol(MT.stone, MT.stoneDk, .2 + .3 * hs(r * 9 + c, 4)), fill: MT.stoneDk, fillOp: 40, tex: .6, ink: PAL.ink, sw: .9 });
-        if (k >= 0 && k < .6) { boilSeed('dust' + r + c); paint(ellPts(X0 + c * CW + CW / 2, y + CH, 60 * (1 + k * 2), 16 * (1 + k), 12), { wash: '#E8D6B0', washOp: 180 * (1 - k / .6), ink: null }); }
-      }
-    }
-    const done = ease(seg(nb, 16, 17.5));
-    if (done > 0) { boilSeed('crown'); paint(rectPts(X0 + 2 * CW, BASE - 8 * CH - 20, 4 * CW, 20), { wash: MT.gold, ink: PAL.ink, sw: .8 }); glow(X0 + 4 * CW, BASE - 8 * CH - 60, 300 * done, '#FFE2A0', .8 * done); }
+    wallScene(t, nb)();
     // builders: figures hauling, and Clawd pushing a block into place on the last courses
     for (let i = 0; i < 4; i++) figure(300 + i * 1000 * (i % 2 ? 1 : .2) + 40 * Math.sin(t * 2 + i), 860, 190, { key: 'bu' + i, col: '#6A4A3A', arm: 1.4 + .3 * Math.sin(bpOf(t) * Math.PI + i), carry: i % 2 ? 'hammer' : null, lean: .1 * Math.sin(bpOf(t) * Math.PI + i) });
     const mood = emotions(t, [[tHit, 'excited'], [tHit + 5.5, 'determined'], [bt(b0 + 16), 'proud']]);
@@ -35,8 +46,27 @@
     clawd(1520, 870, U + 4, { ...mood, view: 'q', flip: true, aL: t < bt(b0 + 16) ? .6 + .4 * push_ : mood.aL, aR: t < bt(b0 + 16) ? .6 + .4 * push_ : mood.aR, dx: -.3 * push_, hat: 'kippah' });
     camEnd();
     if (lt < .3) whipStreaks(1 - lt / .3, 1);
-    boilSeed('wipe');
-    if (t > tNight - .3) brushWipe((t - (tNight - .3)) / .6, [MT.persia, '#3A3F7A']);
+  }
+
+  // the storm over the finished walls; a Greek hoplite's shadow rises behind them and swallows the frame
+  function shotGreek(t, lt, dur) {
+    const dark = ease(seg(lt, .4, 4.5)), rise = ease(seg(lt, 3.2, dur - 1.8)), bolt = bt(beatAt(t - lt + 3.2));
+    const fl = t > bolt && t < bolt + .3 ? 1 - seg(t, bolt, bolt + .3) : 0, shake = shakeXY(t, 4 * fl);
+    camBegin(980 + shake[0], lerp(560, 500, rise) + shake[1], lerp(1.1, 1.0, rise));
+    const front = wallScene(t, 99, dark);
+    for (let i = 0; i < 5; i++) cloud(-300 + i * 560 + 30 * Math.sin(t * .3 + i) - 500 * (1 - dark), 140 + 40 * hs(i, 3), 760, 280, i % 2 ? '#3A4058' : '#555C74', 210 * dark, 'gc' + i);
+    if (fl > 0) flash(fl * .5, '#E8ECFF');
+    if (rise > 0) {   // the shadow, rising behind the wall, eyes lit
+      const h = lerp(300, 1500, rise), x = 1000, y = 980;
+      figure(x, y, h, { key: 'greekShadow', hat: 'helmet', col: '#1C1E2C', ink: null, carry: 'hoplite', arm: .7 });
+      for (const d of [-.03, .03]) glow(x + h * (.02 + d), y - h * .86, 30 + 40 * rise, '#FF6A3A', .9 * rise);
+    }
+    front();
+    for (let i = 0; i < 3; i++) figure(260 + i * 120 + 30 * Math.sin(t + i), 860, 190, { key: 'gb' + i, col: '#4A3A3A', lean: -.15 * rise, headTilt: -.4 * rise, arm: .3 + 1.2 * rise });
+    const mood = emotions(t, [[t - lt, 'proud'], [t - lt + 3.6, 'surprised', { lookY: -.8, lookX: -.5 }], [t - lt + 6, 'scared', { lookY: -.9 }], [t - lt + dur - 4.5, 'determined', { lookY: -.6, lookX: -.5 }]]);
+    clawd(1520, 870, U + 4, { ...mood, view: 'q', flip: true, hat: 'kippah' });
+    camEnd();
+    if (lt > dur - 1.2) flash(ease(seg(lt, dur - 1.2, dur - .1)), '#262A38');
   }
 
   // Q: Shushan at night
@@ -145,5 +175,12 @@
     flash(1 - Math.abs(out - .5) * 2, '#2A1E2E');   // dip through dark from the table to the palace
   }
 
-  shots([[tHit, shotBuild], [tNight, shotShushan], [tLots, shotLots]]);
+  // Shushan: the quiet gap after stanza 3, starting where stanza 3 whips away (its tHit, shifted), ending as stanza 4
+  // begins; the shot's last 8.7 s (Clawd already at the gate) play, and the shadow swallows the frame at the end.
+  const tSh = tHit - SHIFT[2], shDt = 218.3 - sungT(3, 0);
+  shotsShifted([[tSh + shDt, shotShushan]], shDt, { after: (t, lt, dur) => { if (lt > dur - .7) flash(ease(seg(lt, dur - .7, dur)), '#1E1830'); } });
+  // the solo: the walls, from the end of stanza 4 (its lanterns-to-stars ending, shifted), then the Greek shadow
+  const E4 = lineT(4, 0) - SHIFT[3], tGreek = E4 + (tNight - tHit);
+  shotsShifted([[tHit, shotBuild]], tHit - E4);
+  shots([[tGreek, shotGreek]]);
 })();

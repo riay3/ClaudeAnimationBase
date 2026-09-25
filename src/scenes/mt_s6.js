@@ -1,13 +1,15 @@
-// mt_s6.js: STANZA 6, "Hasof z'roa kodshecha" (322.2–362.6 s), the outro. Back at the snowy window: the eighth night.
+// mt_s6.js: STANZA 6, "Hasof z'roa kodshecha" (5:11.9–6:02.6), the outro. Back at the snowy window: the eighth night.
 // Clawd lights all eight candles, one every two beats. A storm batters the window; Clawd climbs onto the sill and
 // becomes a windbreak for the flames. The storm passes. The camera pulls back: every window in the village glows, and
 // seven stars (the seven shepherds) light over the hills. Iris to the window; black. (Shots AB–AD.)
 (() => {
   const { village, room, WIN, HX, HY, HS, CG, CU, REST } = window.MTI;
-  const T0 = lineT(4, 10), U = CU, tOut = 350.2, END = PROJECT.duration;
-  const tC = i => bt(beatAt(324.6) + 2 * i);   // candle i is lit (left → right)
+  // timed to the sung verse: candles over lines 1–2, the storm from line 4, Clawd guards the flames through lines 5–6,
+  // calm on line 7 (seven stars in the window), and out to the village on the repeat (lines 9–10)
+  const T0 = sungT(5, 0), U = CU, tOut = sungT(5, 8), END = PROJECT.duration;
+  const tC = i => bt(SUNG[5] + 4 + 2 * i);   // candle i is lit (left → right)
   const wick = i => [HX - HS * .35 + i * HS * .1, HY - HS * .08 - HS * .16 - HS * .015];
-  const tPlace = tC(7) + 1.5, tStorm = 336.3, tGuard = bt(beatAt(339.35)), tCalm = 346.15;
+  const tPlace = tC(7) + 1.5, tStorm = sungT(5, 3) - .5, tGuard = sungT(5, 4), tCalm = sungT(5, 6);
 
   function shotWindow(t, lt, dur) {
     const storm = ease(seg(t, tStorm, tStorm + 1.6)) * (1 - ease(seg(t, tCalm, tCalm + 2.4)));
@@ -69,7 +71,7 @@
   function shotVillageEnd(t, lt, dur) {
     const back = easeOut(seg(t, tOut, tOut + 4.2));
     camBegin(lerp(WIN[0], 960, back), lerp(WIN[1], 520, back), lerp(9, 1, back));
-    const stars = [0, 1, 2, 3, 4, 5, 6].map(i => ease(seg(t, bt(beatAt(352.95) + i) - .1, bt(beatAt(352.95) + i) + .3)));
+    const stars = [0, 1, 2, 3, 4, 5, 6].map(i => ease(seg(t, bt(SUNG[5] + 66 + 2 * i) - .1, bt(SUNG[5] + 66 + 2 * i) + .3)));
     village(t, {
       lit: 1, allLit: 1, stars7: stars,
       inside: (wx, wy, ww, wh) => {

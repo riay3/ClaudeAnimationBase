@@ -152,5 +152,5 @@
     if (roar > .6) flash(ease(seg(roar, .6, 1)), MT.flameO);
   }
 
-  shots([[V0, shotDawn], [68.45, shotStorm], [77.65, shotAltar]]);
+  shotsShifted([[V0, shotDawn], [68.45, shotStorm], [77.65, shotAltar]], SHIFT[0]);
 })();

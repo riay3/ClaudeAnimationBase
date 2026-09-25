@@ -158,5 +158,9 @@
     if (t > tHit - .3) whipStreaks(seg(t, tHit - .3, tHit), 1);
   }
 
-  shots([[V2, shotSanctuary], [L(2), shotExile], [L(4), shotRivers]]);
+  // placed on the sung verse; its last shot ends in a brush wipe into Shushan (mt_bridge.js), where the wipe finishes
+  const tEnd = tHit - SHIFT[2];
+  shotsShifted([[V2, shotSanctuary], [L(2), shotExile], [L(4), shotRivers]], SHIFT[2], {
+    after: t => { if (t > tEnd - .3 && t < tEnd) { boilSeed('wipe'); brushWipe((t - (tEnd - .3)) / .6, [MT.persia, '#3A3F7A']); } },
+  });
 })();

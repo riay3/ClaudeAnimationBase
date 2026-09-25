@@ -2,18 +2,22 @@
 
 **Logline.** On the first night of Hanukkah, Clawd lights a candle in a snowy window and falls into its flame. Carrying one small clay oil lamp, Clawd walks through the six stanzas of Maoz Tzur: the Temple, Egypt, Babylon, Shushan, the Maccabees and back home. On the eighth night, Clawd lights every candle.
 
-**Song.** Electric guitar cover, 362.6 s, 104 bpm, first downbeat 3.81 s. Each melodic line is 8 beats (4.6 s). A verse is 10 lines (AA B CC), with 6 beats of breath before the next verse. The Hebrew lyric (no vowels) sits at the bottom, one line per 8 beats, as sung. The outro has no clear melody, so stanza 6 is shown two lines at a time.
+**Song.** Electric guitar and vocals, 362.6 s, 104 bpm, first downbeat 3.81 s. The verses were located by isolating the vocal track. Each verse is 10 lines of 8 beats (AA B CC; lines 9–10 repeat 7–8), and the Hebrew lyric (no vowels) sits at the bottom, one line per 8 beats, as sung.
 
-| section | time | energy |
+| section | time | what's on screen |
 |---|---|---|
-| intro | 0–50.0 | quiet, building |
-| stanza 1 | 50.0–96.1 (+hold to 99.6) | full |
-| stanza 2 | 99.6–145.7 (+hold to 149.2) | full |
-| stanza 3 | 149.2–195.4 | full, then a quiet break 176–194 and a big hit at 194.2 |
-| bridge | 195.4–226.5 | loud 194–204, quiet 204–218, building 218–226 |
-| stanza 4 | 226.5–272.6 | loud, dips 266–276 |
-| stanza 5 | 276.1–322.2 | loudest to 312, then quiet |
-| stanza 6 / outro | 322.2–362.6 | medium, fading |
+| intro | 0–22.3 | the village, the first candle, the push into the flame |
+| stanza 1 | 22.3–68.4 | Jerusalem, the barking foe and the rock, the altar and the menorah |
+| stanza 2 | 71.9–118.0 | Egypt, the calf, the pillar of fire, the sea |
+| stanza 3 | 121.5–167.8 | the sanctuary, the exile, the rivers of Babylon, seventy years, the return |
+| gap | 166.5–175.7 | Shushan at night: Mordechai at the gate, Haman's shadow rises |
+| stanza 4 | 175.7–221.9 | the cypress, the snare, the procession (on the big hit, 3:14), the gragger, the tree, the festival |
+| guitar solo | 224.8–248.5 | Jerusalem's walls rebuilt, a course per beat; a storm, and a Greek hoplite's shadow |
+| stanza 5 | 248.5–294.6 | the phalanx, the breach, the one jar, the miracle, eight days, the dance |
+| instrumental | 294.6–311.9 | the dance goes on; the push into one flame |
+| stanza 6 | 311.9–358.0 | the eighth night: all the candles, the storm, the windbreak, the village and the seven stars |
+
+The shot list below is the original plan, written against an earlier verse map. The scene code keeps those timings and places each chapter on its sung verse (`shotsShifted` in `mt_common.js`), so read its times as relative to each stanza.
 
 **World.** Hand-painted shadow theatre in watercolour. The people of every era are dark robed silhouettes, like shadow puppets. Only Clawd (in a small indigo kippah) and the flame are in full colour. Every setting is one continuous place: the Land, the desert, the river, the palace, the hills.
 

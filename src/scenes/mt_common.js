@@ -11,9 +11,21 @@ function bt(n) {
   if (n >= L - 1) return BEATS[L - 1] + (n - L + 1) * BEAT;
   const i = Math.floor(n); return lerp(BEATS[i], BEATS[i + 1], n - i);
 }
-// Each sung verse is 10 lines of 8 beats (lines 9–10 repeat 7–8). VERSE[k] = the beat each verse starts on.
+// Each sung verse is 10 lines of 8 beats (lines 9–10 repeat 7–8). SUNG[k] = the beat verse k starts on, found by
+// isolating the vocal track: 0:22.3, 1:11.9, 2:01.5, 2:55.2, 4:08.4, 5:11.9.
+const SUNG = [32, 118, 204, 298, 424, 534];
+const sungT = (v, k) => bt(SUNG[v] + 8 * k);
+// The chapters were first laid out on an earlier guess of the verse beats (VERSE, one per stanza 1–5). Their scene
+// code still counts in that "authoring" time: each chapter is shifted onto its sung verse by a whole number of beats,
+// so everything stays on the beat. lineT(v, k) is authoring time; sungT(v, k) is real time.
 const VERSE = [80, 166, 252, 386, 472];
 const lineT = (v, k) => bt(VERSE[v] + 8 * k);
+const SHIFT = VERSE.map((b, v) => bt(b) - bt(SUNG[v]));   // authoring time − real time, per stanza
+// Register shots written in authoring time at their real times: fn sees authoring t, and the real lt and dur.
+// o.after(t, lt, dur) runs after each shot, in real time (for transitions the new arrangement adds).
+function shotsShifted(list, dt, o = {}) {
+  shots(list.map(([t0, fn]) => [t0 - dt, (t, lt, dur) => { fn(t + dt, lt, dur); if (o.after) o.after(t, lt, dur); }]));
+}
 
 // ---------- film palette ----------
 const MT = {
@@ -30,8 +42,7 @@ const MT = {
 };
 
 // ---------- lyrics ----------
-// [start, end, text]. Shown at the foot of the frame, as sung: one line per 8 beats. Stanza 6 falls on the outro,
-// where the melody has no clear line grid, so it's shown two lines at a time.
+// [start, end, lines]. Shown at the foot of the frame as sung: one line per 8 beats, lines 9–10 repeating 7–8.
 const STANZAS = [
   ['מעוז צור ישועתי', 'לך נאה לשבח', 'תיכון בית תפילתי', 'ושם תודה נזבח', 'לעת תכין מטבח', 'מצר המנבח', 'אז אגמור בשיר מזמור', 'חנוכת המזבח'],
   ['רעות שבעה נפשי', 'ביגון כוחי כלה', 'חיי מררו בקושי', 'בשעבוד מלכות עגלה', 'ובידו הגדולה', 'הוציא את הסגולה', 'חיל פרעה וכל זרעו', 'ירדו כאבן במצולה'],
@@ -41,13 +52,9 @@ const STANZAS = [
   ['חשוף זרוע קדשך', 'וקרב קץ הישועה', 'נקום נקמת דם עבדיך', 'מאומה הרשעה', 'כי ארכה לנו הישועה', 'ואין קץ לימי הרעה', 'דחה אדמון בצל צלמון', 'הקם לנו רועים שבעה'],
 ];
 const LYRICS = [];
-for (let v = 0; v < 5; v++) {
+for (let v = 0; v < 6; v++) {
   const S = STANZAS[v], order = [0, 1, 2, 3, 4, 5, 6, 7, 6, 7];
-  order.forEach((li, k) => LYRICS.push([lineT(v, k), k < 9 ? lineT(v, k + 1) : lineT(v, 9) + 8 * BEAT - .3, [S[li]]]));
-}
-{ // stanza 6: couplets over the outro, the last one repeated as the song repeats its closing lines
-  const S = STANZAS[5], t0 = bt(558), step = 6.8;
-  [[0, 1], [2, 3], [4, 5], [6, 7], [6, 7]].forEach(([a, b], k) => LYRICS.push([t0 + k * step, t0 + (k + 1) * step - (k === 4 ? .4 : 0), [S[a], S[b]]]));
+  order.forEach((li, k) => LYRICS.push([sungT(v, k), k < 9 ? sungT(v, k + 1) : sungT(v, 10) - .3, [S[li]]]));
 }
 
 const LYR_FONT = s => `800 ${s}px "Frank Ruhl Libre"`;

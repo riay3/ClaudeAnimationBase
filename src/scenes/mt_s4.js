@@ -176,5 +176,5 @@
     if (lt < .3) brushWipe(.5 + lt / .6, ['#6A3A8A', MT.lantern]);
   }
 
-  shots([[V3, shotAxe], [L(2), shotSnare], [L(4), shotProcession], [L(6), shotTree]]);
+  shotsShifted([[V3, shotAxe], [L(2), shotSnare], [L(4), shotProcession], [L(6), shotTree]], SHIFT[3]);
 })();

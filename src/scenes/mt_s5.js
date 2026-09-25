@@ -2,7 +2,9 @@
 // the walls are breached and the oil defiled; one sealed jar; the menorah lit; eight days and nights of light; song
 // and dancing; the camera pushes into one flame. (Shots W–AA.)
 (() => {
-  const V4 = lineT(4, 0), U = 22, L = k => lineT(4, k), tOut = lineT(4, 10);
+  const V4 = lineT(4, 0), U = 22, L = k => lineT(4, k);
+  // the song and dancing carry on through the instrumental after the verse, until stanza 6 begins (in authoring time)
+  const tOut = sungT(5, 0) + SHIFT[4], tLove = tOut - 6;
 
   function stormHills(t, flashK = 0) {
     skyWash(['#2A3044', '#46506A', '#6A7488'], 'stormsky', -900, W + 900, -700, 800);
@@ -186,14 +188,14 @@
     ring.filter(r => r[0]).forEach(r => r[1]());
     menorah7(960, 880, 360, t, [1, 1, 1, 1, 1, 1, 1], { key: 'song', glow: 1.3 });
     ring.filter(r => !r[0]).forEach(r => r[1]());
-    const mood = emotions(t, [[L(8), 'happy', { emote: 'music' }], [L(9) + 1, 'love']]);
-    const dance = t < L(9) + 1 ? move('sway', t) : {};
-    clawd(1320, 960, U + 4, { ...mood, ...dance, dy: (mood.dy || 0) * .5 + (dance.dy || 0), view: t < L(9) + 1 ? 'front' : 'q', flip: true, hat: 'kippah' });
+    const mood = emotions(t, [[L(8), 'happy', { emote: 'music' }], [L(10), 'excited', { emote: 'music' }], [tLove, 'love']]);
+    const dance = t < L(10) ? move('sway', t) : t < tLove ? move('mix', t) : {};
+    clawd(1320, 960, U + 4, { ...mood, ...dance, dy: (mood.dy || 0) * .5 + (dance.dy || 0), view: t < tLove ? (dance.view || 'front') : 'q', flip: t < tLove ? !!dance.flip : true, hat: 'kippah' });
     camEnd();
     if (push_ > .7) flash(ease(seg(push_, .7, 1)), '#FFD58A');
     boilSeed('wipe');
     if (lt < .3) brushWipe(.5 + lt / .6, ['#A8804A', '#FFD58A']);
   }
 
-  shots([[V4, shotPhalanx], [L(2), shotBreach], [L(4), shotJar], [L(6), shotDays], [L(8), shotSong]]);
+  shotsShifted([[V4, shotPhalanx], [L(2), shotBreach], [L(4), shotJar], [L(6), shotDays], [L(8), shotSong]], SHIFT[4]);
 })();

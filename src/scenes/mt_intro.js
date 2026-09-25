@@ -1,4 +1,4 @@
-// mt_intro.js: INTRO (0–50 s). A snowy village at night; one window warms as Clawd carries in the shamash. Match cut
+// mt_intro.js: INTRO (0–22.3 s, until the first verse). A snowy village at night; one window warms as Clawd carries in the shamash. Match cut
 // through the window to the sill: Clawd lights the first candle. Clawd gazes out; Jerusalem appears in the snow-light;
 // the camera pushes into the flame, and gold fills the frame. (Shots A–C in STORYBOARD.md.)
 (() => {
@@ -29,9 +29,9 @@
   }
 
   function shotVillage(t, lt, dur) {
-    const push = easeIn(seg(lt, 3.5, dur)), zoom = lerp(1, 12, push * push) * (1 + .02 * lt);
+    const push = easeIn(seg(lt, 1.6, dur)), zoom = lerp(1, 12, push * push) * (1 + .02 * lt);
     camBegin(lerp(960, WIN[0], ease(seg(lt, 0, dur))), lerp(560, WIN[1], ease(seg(lt, 0, dur))), zoom);
-    const lit = ease(seg(lt, 4.0, 7.0));
+    const lit = ease(seg(lt, 1.8, 3.6));
     village(t, {
       lit,
       inside: (wx, wy, ww, wh) => {   // through the glass: a warm room, the sill, Clawd carrying the shamash in
@@ -40,19 +40,19 @@
         paint(rectPts(wx - ww / 2, wy - wh / 2, ww, wh), { wash: mixCol('#3B2A3E', '#C8844A', lit * .8), ink: null });
         paint(rectPts(wx - ww / 2, wy + wh * .28, ww, wh * .22), { wash: '#6B4A34', ink: null });
         hanukkiah(wx - ww * .1, wy + wh * .3, ww * .45, t, [0, 0, 0, 0, 0, 0, 0, 0, 0], { held: true });
-        const cx = lerp(wx - ww * .7, wx + ww * .22, ease(seg(lt, 4, 8.2))), walking = lt > 4 && lt < 8.2;
-        const pose = carryCandle({ ...feel('hopeful', t), view: lt > 9.5 ? 'front' : 'q', walk: walking ? lt * 1.6 : null, aR: -.2 });
+        const cx = lerp(wx - ww * .7, wx + ww * .22, ease(seg(lt, 1.8, 4.8))), walking = lt > 1.8 && lt < 4.8;
+        const pose = carryCandle({ ...feel('hopeful', t), view: lt > 5.6 ? 'front' : 'q', walk: walking ? lt * 1.6 : null, aR: -.2 });
         clawd(cx, wy + wh * .36, ww * .028, { ...pose, noShadow: true, hat: 'kippah' });
       },
     });
     camEnd();
-    snowfall(t, 60, .2, 1, 210 * (1 - seg(lt, 10, dur)));
-    if (lt < 3) fadeFrom(ease(lt / 3), MT.night);
+    snowfall(t, 60, .2, 1, 210 * (1 - seg(lt, 5.5, dur)));
+    if (lt < 1.8) fadeFrom(ease(lt / 1.8), MT.night);
   }
 
   // ---------- the sill (inside) ----------
   const HX = 700, HY = 800, HS = 560, CG = 850, CU = 24, REST = 1260;
-  const tLight = 19.4;
+  const tLight = bt(12);   // the first candle catches on the beat (10.75 s)
   function room(t, vision, o = {}) {
     boilSeed('wall');
     paint(rectPts(-400, -400, W + 800, H + 800), { wash: '#3A2A3D', ink: null });
@@ -121,17 +121,17 @@
     const L = x => x - T0;   // video time → shot time
     // camera: a steady medium shot, then a push toward Clawd and the window, then into the first flame
     const w7 = [HX - HS * .35 + 7 * HS * .1, HY - HS * .08 - HS * .16 - HS * .015];
-    const cam = lt < L(31.5) ? [lerp(900, 930, seg(lt, 0, L(31.5))), 625 + 6 * Math.sin(lt * .5), lerp(1.42, 1.5, seg(lt, 0, L(31.5)))]
-      : lt < L(40.8) ? [lerp(930, 1000, ease(seg(lt, L(31.5), L(34.5)))), lerp(625, 520, ease(seg(lt, L(31.5), L(34.5)))), lerp(1.5, 1.4, ease(seg(lt, L(31.5), L(34.5))))]
-      : (() => { const k = easeIn(seg(lt, L(40.8), L(47.6))); return [lerp(1000, w7[0], ease(seg(lt, L(40.8), L(44)))), lerp(520, w7[1] - 30, ease(seg(lt, L(40.8), L(44)))), lerp(1.4, 14, k * k)]; })();
+    const cam = lt < L(13.4) ? [lerp(900, 930, seg(lt, 0, L(13.4))), 625 + 6 * Math.sin(lt * .5), lerp(1.42, 1.5, seg(lt, 0, L(13.4)))]
+      : lt < L(16.4) ? [lerp(930, 1000, ease(seg(lt, L(13.4), L(14.9)))), lerp(625, 520, ease(seg(lt, L(13.4), L(14.9)))), lerp(1.5, 1.4, ease(seg(lt, L(13.4), L(14.9))))]
+      : (() => { const k = easeIn(seg(lt, L(16.4), L(21.2))); return [lerp(1000, w7[0], ease(seg(lt, L(16.4), L(18.6)))), lerp(520, w7[1] - 30, ease(seg(lt, L(16.4), L(18.6)))), lerp(1.4, 14, k * k)]; })();
     camBegin(...cam);
-    const vision = ease(seg(t, 32.5, 38));
+    const vision = ease(seg(t, 13.6, 16.2));
     room(t, vision);
 
     // Clawd: holds the shamash, reaches, lights the first candle, pulls back, watches, looks up at the vision
-    const mood = emotions(t, [[0, 'hopeful', { lookX: .9, lookY: .4 }], [17.0, 'determined', { lookX: .9, lookY: .5 }], [tLight + .15, 'happy'],
-      [24.6, 'relieved'], [32.9, 'hopeful', { lookX: .5, lookY: -.9 }], [36.0, 'starstruck', { lookY: -.8 }]]);
-    const reach = ease(seg(t, 17.6, 19.2)) * (1 - ease(seg(t, 20.2, 21.6))), wind = spring(t, 17.2, 7, 14) * .2;
+    const mood = emotions(t, [[0, 'hopeful', { lookX: .9, lookY: .4 }], [9.1, 'determined', { lookX: .9, lookY: .5 }], [tLight + .15, 'happy'],
+      [13.7, 'hopeful', { lookX: .5, lookY: -.9 }], [15.5, 'starstruck', { lookY: -.8 }]]);
+    const reach = ease(seg(t, 9.4, 10.6)) * (1 - ease(seg(t, 11.3, 12.4))), wind = spring(t, 9.2, 7, 14) * .2;
     const aR = lerp(-.25, .51, reach) + .05 * Math.sin(t * 2);
     let pose = { ...mood, view: 'q', flip: true, aR, hat: 'kippah', rot: (mood.rot || 0) * .5 - .06 * reach, dy: mood.dy * (1 - reach), sq: mood.sq * (1 - reach) + wind };
     const tip0 = armTipR(0, CG, CU, pose), xReach = w7[0] - tip0[0];
@@ -143,12 +143,12 @@
     if (t > tLight - .1) glow(w7[0], w7[1] - 20, 260 * (1 + 1.2 * Math.exp(-(t - tLight) * 3)), '#FFB15A', .35 * lit7);
     camEnd();
     // gold fills the frame as the camera enters the flame, and holds until stanza 1
-    const gold = ease(seg(t, 45.8, 48.4));
+    const gold = ease(seg(t, 20.2, 21.9));
     if (gold > 0) flash(gold, '#F6D48C');
     if (lt < .25) flash(1 - lt / .25, '#F0B060');   // the warm flash of passing through the window
   }
 
   // shared with the outro (mt_s6.js), which comes back to this window on the eighth night
   window.MTI = { village, room, WIN, HX, HY, HS, CG, CU, REST };
-  shots([[0, shotVillage], [13.1, shotSill]]);
+  shots([[0, shotVillage], [7.4, shotSill]]);
 })();

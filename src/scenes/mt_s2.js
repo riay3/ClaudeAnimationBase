@@ -245,5 +245,5 @@
     }
   }
 
-  shots([[V1, shotBricks], [L(3), shotCalf], [L(4), shotPillar], [L(6), shotSea], [L(8), shotCrash]]);
+  shotsShifted([[V1, shotBricks], [L(3), shotCalf], [L(4), shotPillar], [L(6), shotSea], [L(8), shotCrash]], SHIFT[1]);
 })();
